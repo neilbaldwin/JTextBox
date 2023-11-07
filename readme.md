@@ -1,4 +1,4 @@
-# JTextBOX
+# JTextBoX
 
 A JSUI text-rendering project for Cycling 74's Max platform by Neil Baldwin, November 2023.
 

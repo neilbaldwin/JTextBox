@@ -29,7 +29,6 @@ var styles = {
 			"size": 16
 		},
 		"em": {
-			// "size": 20
 		},
 		"rd": {
 			"color": [1.0, 0,0,1.0]

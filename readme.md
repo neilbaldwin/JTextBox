@@ -73,16 +73,16 @@ So we now have two styles in our style dictionary, the `basic` one and the new `
 
 | Key | Styling | Notes |
 |---|---| --- |
-|`font`| (string) selects the font name | Any available font on your system`*` |
+|`font`| (string) selects the font name | Any available font on your system *1 |
 |`size`| (points/pixels) sets the font size | |
 |`lineheight`| (float) sets the text line height (vertical spacing between text lines) | `1.0` is default |
 |`color`| (RGBA) sets the color of the text in RGBA format | |
 |`background`| (RGBA) sets the background color of the text box in RGBA format | |
 |`padding`| (pixels) sets internal padding for the text box in pixels | |
 
-`*` Be aware that a selcted font may not be available on other computers/systems if you intend to distribute your Max application. If it's just for you, go for it!
+*1 Be aware that a selcted font may not be available on other computers/systems if you intend to distribute your Max application. If it's just for you, go for it!
 
-##### How do I find out what fonts I can use?
+#### How do I find out what fonts I can use?
 
 In a Max patcher, add the following:
 
@@ -120,7 +120,7 @@ var myStyles = {
 ```
 Two things have changed here, the addition of the two keys `"bd"` and `"st"`. I'll explain but first an important facet of JTextBox in comparisson to, say, HTML/CSS.
 
->##### JTextBox and Inline Styling
+>#### JTextBox and Inline Styling
 >
 >While JTextBox uses styling keywords (and a simplified version of HTML-style tags with which to employ that styling - we'll get to that), you need to be aware that **the tag system is not nested or cascading**. In your encoded text (text string with formatting tags) you use a formatting tag to tell JTextBox "start rending the rest of the text like this" - *there are no closing tags to define the end of the sub-formatting*. If you want to end the current sub-formatting you have to switch to a different sub-format with another tag.
 
@@ -128,11 +128,11 @@ So in the last example, until now we haven't needed to tell JTextBox what it sho
 
 Secondly the `"st"` key is used to tell the renderer *"wherever you find an `<st>` key in the coded text, start rendering the rest of the text with this format"* - here we're simply changing the font to a bold font but you can change any of the formatting (as scoped in the table above).
 
-##### BD and ST: why are tags formatted that way?
+#### BD and ST: why are tags formatted that way?
 
 JTextBox text coding strictly requires tags of two letters e.g. `<bd>` and `<st>`. While it's necessary that a tag is made up of a two letter string, the two letters themselves can be anything. In my examples I've just used "bd" and "st" to sort of mean "body" and "strong" (bold) (like `<body>`  and `<strong>` in HTML). These two letter tag codes obviously need to match keys in the style tags in your styling dictionary.
 
-##### Special Cases
+#### Special Cases
 
 While I said you're free to make your own two-letter tags there are two special cases that need to be observed in order that the renderer works as expected. These are the tags to denote a **heading** and a **carriage return** (new line).
 
@@ -177,7 +177,7 @@ which will then render:
 
 As you can see, if you want to switch to bold and then back again, we start the string off with the tag for 'normal' text, `<bd>` then add the `<em>` tag to tell the rendered to look up the styling for that key and apply it to the remainder of the text. But, as we only wanted the "brown fox" in bold, we added the 'normal' tag again to end the bold style.
 
-##### Headings
+#### Headings
 
 As explained above, tags starting the the letter 'h' are reserved for rendering headings. If you want to format part of your text string as a heading, first define the style and then add the tag as before:
 
@@ -212,12 +212,11 @@ which will render something like:
 
 but obviously the heading will be using the "Impact" font and be colored red. And bigger.
 
-
 ### Using JTextBox
 
 We've covered how to create base styles in your style dictionary and how to extend those styles with style tags so the last step is how to instantiate a JTextBox text box in your project.
 
-##### Adding the JTextBox Class
+#### Adding the JTextBox Class
 
 Simply use an include command somewhere at the top of your JSUI file:
 
@@ -225,7 +224,7 @@ Simply use an include command somewhere at the top of your JSUI file:
 include("JTextBox_class.js)
 ```
 
-##### Creating a new JTextBox Object
+#### Creating a new JTextBox Object
 
 ```javascript
 var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200)
@@ -254,13 +253,14 @@ There are in fact two types of text box you can create: **static** and **dynamic
 | Static | Places a fixed size text box inside your JSUI window at the specified coordinates. Resizing the JSUI window has no effect on the text box's size or position. You can create and place multiple static JTextBox objects inside a single JSUI object. They can overlap and the Z-order in which they are drawn is determined by the order of the JTextBox.paint() functions in your JSUI paint function.|
 | Dynamic | Turns your entire JSUI into a text box. Resizing the JSUI window will resize and reposition text determined by the automatic word-wrapping. You can only instantiate one dynamic text box in your JSUI. If you want multiple dynamic text boxes you need to add another JSUI object to your Max patcher.
 
-##### How to instantiate a Static or Dynamic JTextBox
+#### How to instantiate a Static or Dynamic JTextBox
 
 To instantiate a **Static JTextBox** you just need to specify a width and height bigger than 0 (zero) e.g.
 
 ```javascript
 var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200)
 ```
+
 > **Multiple JTextBox-es**
 > Note: if you want to add more than one static JTextBox to your JSUI you'll need to call the `.paint()` method for each one in your JSUI paint() function/
 
@@ -310,10 +310,10 @@ If you're uninterested in how I approached it, turn off now.
 
 The rendering is split into two stages: tag mapping and rendering.
 
-##### Tag Mapping
+#### Tag Mapping
 
 Your coded text string is scanned for tags and the position (index into the text string) and type of each one is added to an array before rendering.
 
-##### Rendering
+#### Rendering
 
 Then the tag array is scanned and for each tag the renderer looks to see if there's a corresponding key in the specified style dictionary, then any changes are applied to the render output (font, font size) etc. The for that tag, the text extracted and is split into individual "words" (split using " " as a delimiter). This part is necessary for the word-wrapping as the render width is calculated by adding the pixel width of each word until it exceeds the width of the text box, thus forcing the render position to start on a new line.

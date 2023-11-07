@@ -2,6 +2,8 @@
 
 A JSUI text-rendering project for Cycling 74's Max platform by Neil Baldwin, November 2023.
 
+![example](images/example.gif)
+
 ## What is JTextBox
 
 JTextBox is a JSUI object that enables you to easily draw formatted text inside a "text box" in your Max application. Through HTML-like tags and CSS-like style definitions JTextBox allows you to define and use inline styling in your text: font selection, font size, line height and header definitions.

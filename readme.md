@@ -2,6 +2,8 @@
 
 A JSUI text-rendering project for Cycling 74's Max platform by Neil Baldwin, November 2023.
 
+For updates and changes see the end of this document.
+
 ![example](images/example.gif)
 
 ## What is JTextBox
@@ -42,19 +44,19 @@ You need to create a dictionary in your JSUI file that describes the text you wa
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
   }
 }
 ```
-This defines a simple style called `"basic"` that uses the "Ableton Sans Regular" font at size 16.
+This defines a simple style called `"basic"` that uses the "Ableton Sans Medium" font at size 16.
 
 Then we can add a second style and define a few more specific attributes:
 
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
   },
   "complex" : {
@@ -67,7 +69,7 @@ var myStyles = {
   }
 }
 ```
-So we now have two styles in our style dictionary, the `basic` one and the new `complex` one. You can add as many as you like. The `complex` style here uses all of the available styling keys: JTextBox isn't meant to be fully HTML.
+So we now have two styles in our style dictionary, the `basic` one and the new `complex` one. You can add as many as you like. The `complex` style here uses all of the available styling keys (apart from `align` - see below): JTextBox isn't meant to be fully HTML.
 
 #### JTextBox Style Keys
 
@@ -75,10 +77,11 @@ So we now have two styles in our style dictionary, the `basic` one and the new `
 |---|---| --- |
 |`font`| (string) selects the font name | Any available font on your system *1 |
 |`size`| (points/pixels) sets the font size | |
-|`lineheight`| (float) sets the text line height (vertical spacing between text lines) | `1.0` is default |
+|`lineheight`| (float) sets the text line height (vertical spacing between text lines) | Default is 1.0 |
 |`color`| (RGBA) sets the color of the text in RGBA format | |
 |`background`| (RGBA) sets the background color of the text box in RGBA format | |
 |`padding`| (pixels) sets internal padding for the text box in pixels | |
+|`align`| `"left"`, `"right`" or `"center"` - see note below| Default is `"left"`|
 
 *1 Be aware that a selcted font may not be available on other computers/systems if you intend to distribute your Max application. If it's just for you, go for it!
 
@@ -99,7 +102,7 @@ Here's where it gets interesting and a little more complicated! Let's go back to
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
   }
 }
@@ -109,7 +112,7 @@ Now say you wanted to define an inline style to make a word **bold**. You can do
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
     "bd" : { },
     "st" : {
@@ -141,6 +144,12 @@ While I said you're free to make your own two-letter tags there are two special 
 | Carriage Return | `<cr>` | Inserts a new line/carriage return in the text output. Requires no equivalent style key in the style dictionary |
 | Headings | `"h-"` `<h->` | A tag that starts with the letter 'h' will tell the renderer to add a new line at the following tag (hence defining whatever is between the `<h->` tag and the next tag in the text as a heading). The `"-"` part of the tag can be any character e.g h1, h2, h3 |
 
+#### Left, Right and Center Alignment
+
+This is a new feature as of 15/11/2023.
+
+It's now possible to specify text alignment via the `align` key in your style dictionary. This works for both the base style and the tag styles though if you try to use it as an inline style in a paragraph or sentence the results will likely be odd and, even more likely, unpredictable. Have a go though. If you think you've broken something let me know - there are far too many possible edge cases for me to test on my own volition!
+
 ### Coded Text Strings
 
 Until now we've only covered how to set up your styling. The other half to using JTextBox is **Coded Text Strings**
@@ -156,7 +165,7 @@ If you wanted to make "brown fox" bold text you would first need to add the bold
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
     "bd" : { },
     "st" : {
@@ -184,7 +193,7 @@ As explained above, tags starting the the letter 'h' are reserved for rendering 
 ```javascript
 var myStyles = {
   "basic" : {
-    "font" : "Ableton Sans Regular",
+    "font" : "Ableton Sans Medium",
     "size" : 16,
     "bd" : { },
     "st" : {
@@ -293,12 +302,13 @@ var myPlainTextBox = new JTextBox(this, plainText, {}, 0, 0, 100, 100)
 ```
 Instead of specifying a style dictionary, use a pair of empty curly braces, `{}`. This will render the text with the default parameters (and in this case place it at 0:0 with a width/height of 100/100): 
 
-* font = "Ableton Sans Regular"
+* font = "Ableton Sans Medium"
 * font size = 12
 * line height = 1.0
 * background color = transparent [0.0, 0.0, 0.0, 0.0]
 * text color = black [0.0, 0.0, 0.0, 1.0]
 * padding = 8 pixels
+* align = left
 
 #### Word Wrapping
 
@@ -317,3 +327,21 @@ Your coded text string is scanned for tags and the position (index into the text
 #### Rendering
 
 Then the tag array is scanned and for each tag the renderer looks to see if there's a corresponding key in the specified style dictionary, then any changes are applied to the render output (font, font size) etc. The for that tag, the text extracted and is split into individual "words" (split using " " as a delimiter). This part is necessary for the word-wrapping as the render width is calculated by adding the pixel width of each word until it exceeds the width of the text box, thus forcing the render position to start on a new line.
+
+#### Rendering as of 15/11/2023
+
+Major refactoring of the rendering engine to accomodate right-aligned text!
+
+The rendering now uses a second MGraphics canvas to render rows of text to. When the line is 'full' the text canvas is rendered to an image and then that image is drawn to the main MGraphics instance. The reason for this is so that it can offset the X-position from the left or the right when rendering each single row of text to the screen.
+
+As a consequence I realised it would then be easy to add "center" as an alignment option, so you can do that too now.
+
+## Updates and Changes
+
+#### 15/11/2023
+
+* Change: Refactored the whole rendering engine (see **Technical Bit** above) in order to incorporate left and right alignment.
+
+* Addition: to make use of the new left/right aligment rendering there's a new style parameter "align" which can be set to "left", "right" or "center" - "left" is default.
+
+* Bug fix: had the wrong name for the default font as "Ableton Sans Regular" - now corrected to "Ableton Sans Medium"

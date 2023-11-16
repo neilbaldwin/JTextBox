@@ -127,7 +127,7 @@ Two things have changed here, the addition of the two keys `"bd"` and `"st"`. I'
 
 >#### JTextBox and Inline Styling
 >
->While JTextBox uses styling keywords (and a simplified version of HTML-style tags with which to employ that styling - we'll get to that), you need to be aware that **the tag system is not nested or cascading**. In your encoded text (text string with formatting tags) you use a formatting tag to tell JTextBox "start rending the rest of the text like this" - *there are no closing tags to define the end of the sub-formatting*. If you want to end the current sub-formatting you have to switch to a different sub-format with another tag.
+>While JTextBox uses styling keywords (and a simplified version of HTML-style tags with which to employ that styling - we'll get to that), you need to be aware that **the tag system is not nested or cascading**. In your encoded text (text string with formatting tags) you use a formatting tag to tell JTextBox "start rendering the rest of the text like this" - *there are no closing tags to define the end of the sub-formatting*. If you want to end the current sub-formatting you have to switch to a different sub-format with another tag.
 
 So in the last example, until now we haven't needed to tell JTextBox what it should consider *normal text*. If you're going to use inline styling you need to have a "normal" key so that you can insert it after sub-formatted text so the renderer returns to "normal". That's what the `"bd"` key is doing here - "normal" is whatever you've defined in the Base Style.
 
@@ -179,14 +179,14 @@ var myStyles = {
 Then add the tags to your text string:
 
 ```javascript
-var myText = "<bd>The quick <em>brown fox <bd>jumps over the lazy dog."
+var myText = "<bd>The quick <st>brown fox <bd>jumps over the lazy dog."
 ```
 
 which will then render:
 
 >The quick **brown fox** jumps over the lazy dog.
 
-As you can see, if you want to switch to bold and then back again, we start the string off with the tag for 'normal' text, `<bd>` then add the `<em>` tag to tell the rendered to look up the styling for that key and apply it to the remainder of the text. But, as we only wanted the "brown fox" in bold, we added the 'normal' tag again to end the bold style.
+As you can see, if you want to switch to bold and then back again, we start the string off with the tag for 'normal' text, `<bd>` then add the `<st>` tag to tell the rendered to look up the styling for that key and apply it to the remainder of the text. But, as we only wanted the "brown fox" in bold, we added the 'normal' tag again to end the bold style.
 
 #### Headings
 
@@ -252,12 +252,19 @@ var TEXT_BOX_NAME = new JTextBox(this, TEXT, STYLES["STYLE NAME"], X, Y, WIDTH, 
 ```
 
 `TEXT` is the formatted text string that you want to render inside the text box
+
 `STYLES` is the name of the dictionary that holds all of your text styles
+
 `STYLE NAME` is the name of the style in your style dictionary with which to render the text
+
 `X` is the X position in pixels of the text box inside the JSUI window**
+
 `Y` is the Y position of the text box inside the JSUI window**
+
 `WIDTH` is the width in pixels of the text box**
+
 `HEIGHT` is the height in pixels of the text box**
+
 `OVER-SCALING-FACTOR` sets the image rendering scale (see below)
 
 ** Remember if you specify X/Y/WIDTH/HEIGHT of `0, 0, 0, 0` the text box will be a dynamic (resizable) one that takes up the entire JSUI window

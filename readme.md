@@ -4,6 +4,8 @@ A JSUI text-rendering project for Cycling 74's Max platform by Neil Baldwin, Nov
 
 For updates and changes see the end of this document.
 
+**Important update 16/11/2023** : an extra parameter has been added to the instance parameters - see "Instance Parameters" and "Over-Scaling Factor" below. If you forget to add it there's a check to prevent rendering failure but have a read, it's a good one!
+
 ![example](images/example.gif)
 
 ## What is JTextBox
@@ -236,14 +238,46 @@ include("JTextBox_class.js)
 #### Creating a new JTextBox Object
 
 ```javascript
-var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200)
+var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200, 1.0)
 ```
 
-This will create a new text box at X:Y position 0:0 which is 300 pixels wide and 200 pixels high - the text box will contain the text in the string `myText` and will have it's style determined by the style `"basic"` in the style dictionary `myStyles` - note how to reference a style inside the styles dictionary: `styles["style name"]`
+This will create a new text box at X:Y position 0:0 which is 300 pixels wide and 200 pixels high and an "over-scale" factor of 1.0 (see below) - the text box will contain the text in the string `myText` and will have it's style determined by the style `"basic"` in the style dictionary `myStyles` - note how to reference a style inside the styles dictionary: `styles["style name"]`
 
 Note: the first parameter must be **`this`** - it's used to pass a reference to the JTextBox's parent object (the JSUI window). If that doesn't make any sense to you don't worry about it. Just make sure to included it as the first parameter.
 
-#### Putting It On The Screen
+#### Instance Parameters
+
+```javascript
+var TEXT_BOX_NAME = new JTextBox(this, TEXT, STYLES["STYLE NAME"], X, Y, WIDTH, HEIGHT, OVER-SCALING-FACTOR)
+```
+
+`TEXT` is the formatted text string that you want to render inside the text box
+`STYLES` is the name of the dictionary that holds all of your text styles
+`STYLE NAME` is the name of the style in your style dictionary with which to render the text
+`X` is the X position in pixels of the text box inside the JSUI window**
+`Y` is the Y position of the text box inside the JSUI window**
+`WIDTH` is the width in pixels of the text box**
+`HEIGHT` is the height in pixels of the text box**
+`OVER-SCALING-FACTOR` sets the image rendering scale (see below)
+
+** Remember if you specify X/Y/WIDTH/HEIGHT of `0, 0, 0, 0` the text box will be a dynamic (resizable) one that takes up the entire JSUI window
+
+#### Over-Scaling Factor
+
+A new feature as of 16/11/2023.
+
+Internally, each section of the text is actually rendered into an image and then that image is placed on the JSUI canvas. This was necessary in order to implement the alignment settings. A consequence of this is that when zoomed in on the Max window, the text will become pixelated.
+
+"Over-Scaling" allows you to set a factor by which the size of the text image is multiplied, which is then scaled back down when the text image is rendered to the canvas. This means you can, if required, over-scale the text so that when you zoom into the Max window the pixelation is reduced.
+
+Default is 1.0. Settings of 2.0 or 4.0 are sensible. You can probably break it if you overdo it.
+
+This shows the difference between 1.0 and 4.0 when zoomed in. The top text is rendered with an over-scale factor of 1.0, the bottom has a scale of 4.0:
+
+<img src="images/over-scaling.png" height="300px">
+
+
+### Putting It On The Screen
 
 The final final step! Believe me it's easier than doing this manually. In your JSUI paint function, call your JTextBox's paint function:
 
@@ -267,7 +301,7 @@ There are in fact two types of text box you can create: **static** and **dynamic
 To instantiate a **Static JTextBox** you just need to specify a width and height bigger than 0 (zero) e.g.
 
 ```javascript
-var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200)
+var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 200, 1.0)
 ```
 
 > **Multiple JTextBox-es**
@@ -276,7 +310,7 @@ var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 10, 20, 300, 2
 To instantiate a **Dynamic JTextBox** just set the width and height parameters to 0 e.g.
 
 ```javascript
-var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 0, 0, 0, 0)
+var myCoolTextBox = new JTextBox(this, myText, myStyles["basic"], 0, 0, 0, 0, 1.0)
 ```
 
 > **Dynamic Resizing**
@@ -298,7 +332,7 @@ It is possible to use JTextBox to create simple "unstyled" text.
 ```javascript
 var plainText = "This is some very plain text."
 
-var myPlainTextBox = new JTextBox(this, plainText, {}, 0, 0, 100, 100)
+var myPlainTextBox = new JTextBox(this, plainText, {}, 0, 0, 100, 100, 1.0)
 ```
 Instead of specifying a style dictionary, use a pair of empty curly braces, `{}`. This will render the text with the default parameters (and in this case place it at 0:0 with a width/height of 100/100): 
 
@@ -337,6 +371,10 @@ The rendering now uses a second MGraphics canvas to render rows of text to. When
 As a consequence I realised it would then be easy to add "center" as an alignment option, so you can do that too now.
 
 ## Updates and Changes
+
+#### 16/11/2023
+
+* Added a new instance variable `over-scaling-factor` - this is used to force the rendering engine to render the text images at higher resolutions (and then are scaled back to the correct font size before rendering the text box) which makes a huge improvement to pixelation when zoomed into the Max window. See details above in **"Over-Scaling Factor"**
 
 #### 15/11/2023
 

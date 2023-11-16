@@ -19,7 +19,7 @@ if you want to use multiple fonts and/or <bd>font sizes or colors. \
 This will also word-wrap the text to a defined text box."
 
 var text2 = "Jaded zombies acted quaintly but kept driving their oxen forward."
-var text3 = "A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent. <cr>This is an example of a Static JTextBox."
+var text3 = "A mad boxer shot a quick, gloved jab to the jaw of his dizzy opponent."
 
 var staticText = "This is an example of a Static JTextBox."
 
@@ -50,16 +50,16 @@ var styles = {
 		"h1": {
 			"font": "Arial Bold",
 			"size": 24,
-			"lineheight": 1.2,
+			"lineheight": 1.4,
 			"color": [0, 0,0,1.0],
 		}
 	},
 	"style2" : {
 		"background" : [0.9, 0.8, 0.0, 1.0],
 		"color": [0.0, 0.0, 0.0, 1.0],
-		"padding": 6,
+		"padding": 0,
 		"font": "American Typewriter",
-		"size": 12,
+		"size": 16,
 		"lineheight": 1.2,
 		"align": "center",
 		"bd": {
@@ -82,17 +82,21 @@ var styles = {
 
 // Create a couple of text boxes
 var myTextBox = new JTextBox(this, text, styles["basic"], 0, 0, 0, 0);
-var tb2 = new JTextBox(this, text3, styles["style2"], 100, 250, 200, 150);
+var tb2 = new JTextBox(this, text3, styles["style2"], 100, 250, 200, 150, 4.0);
 
 // JSUI Paint Function - call your text box paint function here
 function paint() {
-	myTextBox.paint();
+	if (myTextBox) {
+		myTextBox.paint();
+	}
 	tb2.paint();
 }
 
 function onresize(w, h) {
 	this.box.size(w, h);
-	myTextBox.calcWindow()
+	if (myTextBox) {
+		myTextBox.calcWindow()
+	}
 	tb2.calcWindow();
 	refresh();
 }

@@ -1,10 +1,16 @@
 //----------------------------------------------------------------------------
 // JTextBox : 'class' definition
 //----------------------------------------------------------------------------
-function JTextBox(parent, text, st, x, y, w, h) {
+function JTextBox(parent, text, st, x, y, w, h, os) {
 
   // Default index skip (number of characters in tag e.g. ""<h1>")
   var ts = 4
+
+  // Set "over scaling" amount - renders text imagea at a higher resolution
+  // to overcome pixelation. Default is 1.0, 2.0 or 4.0 are sensible
+  // (set when you instantiate a JTextBox - new parameter added)
+  var scaling = (os > 0.0) ? os : 1.0
+  var iScaling = 1.0 / scaling
 
   this.parent = parent
 	this.text = text;
@@ -100,7 +106,7 @@ function JTextBox(parent, text, st, x, y, w, h) {
         
         this.drawTextImage()
         this.tx = 0;
-        this.ty = this.ty + (this.metrics[1] * this.lh * 2)
+        this.ty = this.ty + (this.metrics[1] * iScaling * this.lh * 2)
 
 			} else if (tag == "  ") {
 
@@ -170,7 +176,7 @@ function JTextBox(parent, text, st, x, y, w, h) {
 				if (w < words.length-1) { word = word + " " }
 				// Get text measurements for positioning calculations
         this.metrics = this.tRender.text_measure(word);
-        if (this.tx + this.metrics[0] >= (this.tw - this.p)) {
+        if (this.tx * iScaling + (this.metrics[0] * iScaling) >= (this.tw  - this.p)) {
           this.renderTextRow()
         }
         this.showWord(word);
@@ -186,7 +192,7 @@ function JTextBox(parent, text, st, x, y, w, h) {
 			if (t < tagArray.length-1) {
         word = " "
 				this.metrics = this.tRender.text_measure(word);
-        if (this.tx + this.metrics[0] >= (this.tw - this.p)) {
+        if (this.tx * iScaling + (this.metrics[0] * iScaling) >= (this.tw  - this.p)) {
           this.renderTextRow()
         }
         this.showWord(word)
@@ -199,22 +205,24 @@ function JTextBox(parent, text, st, x, y, w, h) {
 		}
     // Reset transform matrix
     mgraphics.set_matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    this.tRender.freepeer();
+    this.tImage.freepeer();
 	}
 
   this.getAlignOffset = function () {
     if (this.align == "left") { return this.hx + this.p }
-    if (this.align == "right") { return this.hx + this.hw - this.tx - this.p }
-    if (this.align == "center") { return this.hx + ((this.hw - this.tx + this.p) * 0.5) }
+    if (this.align == "right") { return this.hx + this.hw - (this.tx * iScaling) - this.p }
+    if (this.align == "center") { return this.hx + ((this.hw - (this.tx * iScaling) + this.p) * 0.5) }
   }
 
   this.newTextCanvas = function(init) {
     if (init == 0) {
-      this.tRender = new MGraphics(this.hw, this.hh)
+      this.tRender = new MGraphics(this.hw * scaling, this.hh * scaling)
     }
     // Setup font parameters
     this.tRender.set_source_rgba(this.color);
     this.tRender.select_font_face(this.font)
-    this.tRender.set_font_size(this.fontSize, 0)
+    this.tRender.set_font_size(this.fontSize * scaling, 0)
 
     // Get font size properties
     this.fascent = this.tRender.font_extents()[0]
@@ -224,26 +232,27 @@ function JTextBox(parent, text, st, x, y, w, h) {
 
   this.drawTextImage = function() {
     var tox = this.getAlignOffset()
-    mgraphics.set_matrix(1.0, 0.0, 0.0, 1.0, tox, this.hy + this.p + this.ty)
+    mgraphics.set_matrix(iScaling, 0.0, 0.0, iScaling, tox, this.hy + this.p + this.ty)
      // Draw text render image to main canvas
     this.tImage = new Image(this.tRender)
-    if (this.ty + this.metrics[1] < (this.th - this.p)) {
-      mgraphics.image_surface_draw(this.tImage, [0, 0, this.hw, this.hh]);
+    if (this.ty + (this.metrics[1] * iScaling) < (this.th - this.p)) {
+      mgraphics.image_surface_draw(this.tImage, [0, 0, this.hw * scaling, this.hh * scaling]);
     }
   }
 
   this.renderTextRow = function() {
     this.drawTextImage()
     this.tx = 0;
-    this.ty = this.ty + (this.metrics[1] * this.lh)  
+    this.ty = this.ty + (this.metrics[1] * iScaling * this.lh)  
     this.newTextCanvas(0)
     this.rFlag = false;
   }
 
   this.showWord = function(word) {
     this.tRender.move_to(this.tx, this.fheight - this.fdescent);
+    // this.tRender.text_path(word);
     this.tRender.show_text(word);
-    this.tx = this.tx + this.metrics[0]
+    this.tx = this.tx + (this.metrics[0])
     this.rFlag = true;
   }
 }

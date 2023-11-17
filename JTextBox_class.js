@@ -67,7 +67,7 @@ function JTextBox(parent, text, st, x, y, w, h, os) {
 		this.tw = this.hw - this.p
 		this.th = this.hh - this.p
 
-		// Draw background rectangle and fill
+		// Draw background rectangle and fill    
 		mgraphics.set_source_rgba(bg);		
 		mgraphics.rectangle(this.hx, this.hy, this.hw, this.hh);
 		mgraphics.fill();
@@ -220,7 +220,10 @@ function JTextBox(parent, text, st, x, y, w, h, os) {
       this.tRender = new MGraphics(this.hw * scaling, this.hh * scaling)
     }
     // Setup font parameters
+    // Weirdly, have to set the RGBA for the main canvas and 
+    // the text canvas otherwise transparent background doesn't work properly!?
     this.tRender.set_source_rgba(this.color);
+    mgraphics.set_source_rgba(this.color);
     this.tRender.select_font_face(this.font)
     this.tRender.set_font_size(this.fontSize * scaling, 0)
 

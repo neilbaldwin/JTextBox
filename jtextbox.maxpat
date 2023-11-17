@@ -95,7 +95,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 90.0, 109.0, 418.0, 430.0 ]
+					"patching_rect" : [ 90.0, 109.0, 434.0, 426.0 ]
 				}
 
 			}

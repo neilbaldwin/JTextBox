@@ -1,7 +1,5 @@
 # JTextBoX
 
-<a href="https://www.buymeacoffee.com/neilbaldwi3" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
 A JSUI text-rendering project for Cycling 74's Max platform by Neil Baldwin, November 2023.
 
 For updates and changes see the end of this document.

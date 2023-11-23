@@ -20,6 +20,12 @@ The idea came from another JSUI project I was working on where I needed to creat
 
 Hence: JTextBox
 
+## Support My Work
+
+If you like my work and use it or learn from it, please consider supporting me or just a donation to say thanks:
+
+<a href="https://www.buymeacoffee.com/neilbaldwi3" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;" ></a>
+
 ## Contents and Installation
 
 Place the files in your Max search path.

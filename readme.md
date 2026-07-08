@@ -2,4 +2,4 @@
 
 In future, all of my projects will be found on Codeberg
 
-https://github.com/neilbaldwin/JTextBox
+https://codeberg.org/neilbaldwin
